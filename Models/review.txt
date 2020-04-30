@@ -1,0 +1,54 @@
+﻿protected void lbSubmission_Click(object sender, EventArgs e)
+        {
+			gvSubmittedReview.Visible = true;
+			gvAESearch.Visible = false;
+		}
+
+protected void gvSubmittedReview_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (gvSubmittedReview.SelectedDataKey != null)
+			{
+				Session["manuTitle"] = gvSubmittedReview.SelectedRow.Cells[1].Text;
+				var gvSearchId = gvSubmittedReview.SelectedDataKey.Value;
+				Session["gvSearchId"] = gvSearchId;
+				Server.Transfer("ReviewManuscript.aspx");
+			}
+		}
+
+
+/////
+<asp:GridView ID="gvSubmittedReview" runat="server" AutoGenerateColumns="False" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="4" CssClass="table table-hover table-responsive" DataKeyNames="Id" DataSourceID="SqlDataSource2" ForeColor="Black" Gridlines="Horizontal" Height="108px" Width="100%" OnSelectedIndexChanged="gvSubmittedReview_SelectedIndexChanged">
+						<Columns>
+							<asp:BoundField DataField="Id" HeaderText="Id" InsertVisible="False" ReadOnly="True" SortExpression="Id" Visible="false" />
+							<asp:BoundField DataField="Title" HeaderText="Title" SortExpression="Title" />
+							<asp:BoundField DataField="DueDate" HeaderText="DueDate" SortExpression="DueDate" Visible="false" />
+							<asp:BoundField DataField="Responsibility" HeaderText="Responsibility" SortExpression="Responsibility" />
+							<asp:TemplateField HeaderText="Manuscript File">
+								<ItemTemplate>
+									<asp:LinkButton ID="LinkButton2" runat="server" OnClick="OpenDocument" Text='<%# Eval("Name") %>'></asp:LinkButton>
+								</ItemTemplate>
+							</asp:TemplateField>
+							<asp:TemplateField ShowHeader="False">
+								<ItemTemplate>
+									<asp:LinkButton ID="lbView" runat="server" CausesValidation="False" CommandName="Select"  Text="View"></asp:LinkButton>
+								</ItemTemplate>
+							</asp:TemplateField>
+						</Columns>
+						<EmptyDataTemplate>
+							No Record Found!!
+						</EmptyDataTemplate>
+						<FooterStyle BackColor="#CCCC99" ForeColor="Black" />
+						<PagerStyle BackColor="White" ForeColor="Black" HorizontalAlign="Right" />
+						<RowStyle CssClass="cursor-pointer" />
+						<SelectedRowStyle BackColor="#CC3333" Font-Bold="True" ForeColor="White" />
+						<SortedAscendingCellStyle BackColor="#F7F7F7" />
+						<SortedAscendingHeaderStyle BackColor="#4B4B4B" />
+						<SortedDescendingCellStyle BackColor="#E5E5E5" />
+						<SortedDescendingHeaderStyle BackColor="#242121" />
+					</asp:GridView>
+					<br />
+					<asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:TRPRConnectionString %>" SelectCommand="SELECT Files.Id, Files.Name, Files.DocumentContent, Files.Extn, Files.FilePath, Files.DueDate, Files.Responsibility, Files.Title, Files.FinalDecision, Comment.Id AS Expr1, Comment.UpdatedOn, Comment.UpdatedBy, Comment.CommentToAuthor, Comment.CommentToEditor, Comment.FinalDecision AS Expr2, Comment.Name AS Expr3, Comment.DocumentContent AS Expr4, Comment.Extn AS Expr5, Comment.FilePath AS Expr6, Comment.FileID FROM Comment INNER JOIN Files ON Comment.FileID = Files.Id WHERE (Comment.UpdatedBy = @Param1)">
+						<SelectParameters>
+							<asp:SessionParameter Name="Param1" SessionField="Data" />
+						</SelectParameters>
+					</asp:SqlDataSource>
